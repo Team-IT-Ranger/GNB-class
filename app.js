@@ -553,149 +553,12 @@ async function loadScores() {
   }
 }
 
-// ---- Shared class chat (polls the GAS backend so every visitor sees the same messages) ----
-const CHAT_POLL_INTERVAL_MS = 4000;
-const MAX_CHAT_MESSAGE_LENGTH = 500; // keep in sync with MAX_CHAT_MESSAGE_LENGTH in backend/Code.gs
-let chatMessages = [];
-let chatPendingMessages = []; // shown immediately on send, before the backend round-trip confirms them — removed once the real fetched message matches
-let chatLastId = 0;
-let chatLoaded = false;
-let chatUnreadCount = 0;
-let chatFetchInFlight = false;
-let chatSendInFlight = false;
-
-function formatChatTime(iso) {
-  try {
-    return new Date(iso).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
-  } catch {
-    return "";
-  }
-}
-
-function renderChatMessages() {
-  const box = document.querySelector("#chat-messages");
-  if (!box) return;
-  const combined = [...chatMessages, ...chatPendingMessages];
-  if (!combined.length) {
-    box.innerHTML = `<p class="chat-empty">ยังไม่มีข้อความ เริ่มพิมพ์คำถามได้เลย</p>`;
-    return;
-  }
-  const me = studentName();
-  box.innerHTML = combined.map(m => `
-    <div class="chat-message ${m.name === me ? "own" : ""} ${m.clientId ? "pending" : ""}">
-      <div class="chat-message-meta"><strong>${esc(m.name || "ไม่ระบุชื่อ")}</strong><span>${m.clientId ? "กำลังส่ง..." : esc(formatChatTime(m.time))}</span></div>
-      <div class="chat-message-text">${esc(m.message)}</div>
-    </div>`).join("");
-  box.scrollTop = box.scrollHeight;
-}
-
-function updateChatBadge() {
-  const badge = document.querySelector("#chat-badge");
-  if (!badge) return;
-  if (chatUnreadCount > 0) {
-    badge.hidden = false;
-    badge.textContent = chatUnreadCount > 99 ? "99+" : String(chatUnreadCount);
-  } else {
-    badge.hidden = true;
-  }
-}
-
-async function fetchChatMessages() {
-  if (!GAS_ENDPOINT || chatFetchInFlight) return;
-  chatFetchInFlight = true;
-  try {
-    const res = await fetch(`${GAS_ENDPOINT}?action=chat&since=${chatLastId}&secret=${encodeURIComponent(GAS_SECRET)}`);
-    const data = await res.json();
-    if (!data || !data.ok || !data.messages || !data.messages.length) return;
-    const knownIds = new Set(chatMessages.map(m => m.id));
-    const freshMessages = data.messages.filter(m => !knownIds.has(m.id));
-    if (!freshMessages.length) return;
-    const isFirstLoad = !chatLoaded;
-    chatLoaded = true;
-    chatMessages.push(...freshMessages);
-    if (chatMessages.length > 300) chatMessages = chatMessages.slice(-300);
-    chatLastId = Math.max(chatLastId, ...data.messages.map(m => m.id));
-    // the real, server-confirmed copy has arrived — drop the optimistic stand-in so it isn't shown twice
-    freshMessages.forEach(m => {
-      const idx = chatPendingMessages.findIndex(p => p.name === m.name && p.message === m.message);
-      if (idx !== -1) chatPendingMessages.splice(idx, 1);
-    });
-    const panel = document.querySelector("#chat-panel");
-    if (panel && panel.classList.contains("open")) {
-      renderChatMessages();
-    } else if (!isFirstLoad && isInstructorDevice()) {
-      chatUnreadCount += freshMessages.filter(m => m.name !== studentName()).length;
-      updateChatBadge();
-    }
-  } catch (err) {
-    // best-effort: polling silently retries on the next interval
-  } finally {
-    chatFetchInFlight = false;
-  }
-}
-
-async function sendChatMessage(text) {
-  if (chatSendInFlight) return; // guards against Enter + then clicking "ส่ง" again before the first request finishes
-  const name = studentName();
-  if (!name) {
-    toast("กรุณากรอกชื่อของคุณก่อนแชท");
-    return;
-  }
-  const message = text.trim().slice(0, MAX_CHAT_MESSAGE_LENGTH);
-  if (!message) return;
-  if (!GAS_ENDPOINT) {
-    toast("ยังไม่ได้เชื่อมต่อระบบแชท ติดต่อผู้สอน");
-    return;
-  }
-  chatSendInFlight = true;
-  const input = document.querySelector("#chat-input");
-  const sendBtn = document.querySelector("#chat-form button[type=submit]");
-  input.disabled = true;
-  sendBtn.disabled = true;
-
-  // show it right away instead of waiting on the round-trip to Apps Script (which can take a
-  // couple of seconds) — the next poll reconciles this with the server-confirmed copy
-  const clientId = `pending-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  chatPendingMessages.push({ clientId, name, message, time: new Date().toISOString() });
-  input.value = "";
-  renderChatMessages();
-
-  try {
-    const res = await fetch(GAS_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ type: "chat", secret: GAS_SECRET, name, message }),
-    });
-    const data = await res.json();
-    if (!data.ok) {
-      toast("ส่งข้อความไม่สำเร็จ: " + (data.error || "unknown error"));
-      chatPendingMessages = chatPendingMessages.filter(p => p.clientId !== clientId);
-      renderChatMessages();
-    }
-  } catch (err) {
-    toast("ส่งข้อความไม่สำเร็จ ลองใหม่อีกครั้ง");
-    chatPendingMessages = chatPendingMessages.filter(p => p.clientId !== clientId);
-    renderChatMessages();
-  } finally {
-    chatSendInFlight = false;
-    input.disabled = false;
-    sendBtn.disabled = false;
-    input.focus();
-  }
-}
-
-function openChatPanel() {
-  document.querySelector("#chat-panel").classList.add("open");
-  document.querySelector("#chat-panel-backdrop").classList.add("show");
-  chatUnreadCount = 0;
-  updateChatBadge();
-  renderChatMessages();
-  fetchChatMessages();
-  document.querySelector("#chat-input").focus();
-}
-function closeChatPanel() {
-  document.querySelector("#chat-panel").classList.remove("open");
-  document.querySelector("#chat-panel-backdrop").classList.remove("show");
+// ---- ห้องแชตของคลาส: ใช้ Google Chat (เปิดในแท็บใหม่) แทนแชตในแอป ----
+function openChat() {
+  const url = APP_CONFIG.CHAT_URL;
+  if (!url || !/^https:\/\/chat\.google\.com\//.test(url)) { toast("ยังไม่ได้ตั้งค่าลิงก์ห้องแชต ติดต่อผู้สอน"); return; }
+  toast("เปิดห้อง Google Chat ในแท็บใหม่ · ห้ามพิมพ์ชื่อบุคคลอื่นหรือข้อมูลลูกค้า");
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 // ================= หน้าจอและเนื้อหา =================
@@ -1299,6 +1162,7 @@ document.addEventListener("click", async event => {
   if (target.dataset.action === "retake-selfcheck") { localStorage.removeItem(target.dataset.key); render(); return; }
   if (target.dataset.action === "download-handbook-pdf") { downloadHandbookPdf(); return; }
   if (target.dataset.action === "download-certificate") { downloadCertificate(); return; }
+  if (target.dataset.action === "open-chat") { openChat(); return; }
   if (target.dataset.action === "show-qr") { showQrModal(); return; }
   if (!target.dataset.view) return;
   event.preventDefault();
@@ -1499,20 +1363,8 @@ setDensity(localStorage.getItem("gn-density") || "normal");
 document.querySelector("#theme-button").addEventListener("click", () => { const next = document.documentElement.dataset.theme === "dark" ? "" : "dark"; document.documentElement.dataset.theme = next; localStorage.setItem("gn-theme", next); });
 document.querySelector("#modal-close").addEventListener("click", hideModal);
 document.querySelector("#modal-overlay").addEventListener("click", (event) => { if (event.target.id === "modal-overlay") hideModal(); });
-document.addEventListener("keydown", (event) => { if (event.key === "Escape") { hideModal(); closeChatPanel(); } });
+document.addEventListener("keydown", (event) => { if (event.key === "Escape") { hideModal(); } });
 
-document.querySelector("#chat-button").addEventListener("click", () => {
-  const panel = document.querySelector("#chat-panel");
-  panel.classList.contains("open") ? closeChatPanel() : openChatPanel();
-});
-document.querySelector("#chat-panel-close").addEventListener("click", closeChatPanel);
-document.querySelector("#chat-panel-backdrop").addEventListener("click", closeChatPanel);
-document.querySelector("#chat-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  sendChatMessage(document.querySelector("#chat-input").value);
-});
-fetchChatMessages();
-setInterval(fetchChatMessages, CHAT_POLL_INTERVAL_MS);
 document.documentElement.dataset.theme = localStorage.getItem("gn-theme") || "";
 window.addEventListener("hashchange", render);
 render();

@@ -28,6 +28,7 @@
       <div class="sidebar-footer">
         <a href="#plan" data-view="plan">แผน 7 วันหลังจบคลาส</a>
         <a href="#troubleshoot" data-view="troubleshoot">แก้ปัญหา</a>
+        <button type="button" data-action="open-chat">ห้องแชต (Google Chat)</button>
         <button type="button" data-action="show-qr">QR ลิงก์แอป</button>
       </div>
     </aside>
@@ -43,7 +44,7 @@
         </div>
         <button class="icon-button" id="theme-button" aria-label="เปลี่ยนโหมดสี" title="เปลี่ยนโหมดสี">◐</button>
         <button class="icon-button" id="whiteboard-button" data-view="whiteboard" aria-label="เปิด Whiteboard" title="Whiteboard">🖊️</button>
-        <button class="icon-button chat-button" id="chat-button" aria-label="เปิดแชตถาม-ตอบ" title="แชตถาม-ตอบ">💬<span class="chat-badge" id="chat-badge" hidden>0</span></button>
+        <button class="icon-button chat-button" id="chat-button" data-action="open-chat" aria-label="เปิดห้องแชต Google Chat" title="ห้องแชตของคลาส (Google Chat)">💬</button>
       </header>
       <div id="app" class="app"></div>
     </main>
@@ -64,19 +65,7 @@
         <button type="submit" class="primary-button">เริ่มใช้งาน</button>
       </form>
     </div>
-    <aside class="chat-panel" id="chat-panel" aria-label="แชตถาม-ตอบ">
-      <div class="chat-panel-header">
-        <h2>💬 แชตถาม-ตอบ</h2>
-        <button type="button" class="chat-panel-close" id="chat-panel-close" aria-label="ปิดแชต">✕</button>
-      </div>
-      <p class="chat-note">ทุกคนในคลาสเห็นข้อความเดียวกัน ห้ามพิมพ์ชื่อบุคคลอื่นหรือข้อมูลลูกค้า</p>
-      <div class="chat-messages" id="chat-messages"><p class="chat-empty">ยังไม่มีข้อความ เริ่มพิมพ์คำถามได้เลย</p></div>
-      <form class="chat-input-row" id="chat-form">
-        <input type="text" id="chat-input" placeholder="พิมพ์คำถามของคุณ..." maxlength="500" autocomplete="off" required />
-        <button type="submit">ส่ง</button>
-      </form>
-    </aside>
-    <div class="chat-panel-backdrop" id="chat-panel-backdrop"></div>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="config.js"></script>
     <script src="agenda-data.js"></script>
