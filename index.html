@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ห้องเรียนออนไลน์ Gemini × Gemini Notebook (เดิมชื่อ NotebookLM) 3 ชั่วโมง: คู่มือ สไลด์ แบบฝึกหัด Workshop และแบบทดสอบ ครบในที่เดียว" />
+    <title>Gemini × Gemini Notebook | ห้องเรียนออนไลน์</title>
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a class="brand-icon-link" href="#start" title="กลับไปหน้าแรก"><img class="brand-mark" src="assets/icon.svg" alt="" /></a>
+        <a class="brand" href="#start" aria-label="กลับไปหน้าเริ่มต้น">
+          <span>GEMINI × NOTEBOOK<small>ห้องเรียนออนไลน์</small></span>
+        </a>
+        <button id="pin-button" class="pin-button" type="button" aria-pressed="false" title="ปักหมุดเมนูให้เปิดค้างไว้">📌</button>
+      </div>
+      <label class="student-name-field student-name-field-top">
+        <span>ชื่อของคุณ (ใช้กับผลที่คุณกดส่งเอง)</span>
+        <input id="student-name" type="text" placeholder="ชื่อ นามสกุล หรือ ชื่อเล่น แผนก" autocomplete="name" />
+      </label>
+      <nav id="chapter-nav" aria-label="บทเรียน"></nav>
+      <div class="sidebar-footer">
+        <a href="#plan" data-view="plan">แผน 7 วันหลังจบคลาส</a>
+        <a href="#troubleshoot" data-view="troubleshoot">แก้ปัญหา</a>
+        <button type="button" data-action="show-qr">QR ลิงก์แอป</button>
+      </div>
+    </aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <main>
+      <header class="topbar">
+        <button class="icon-button menu-button" id="menu-button" aria-label="เปิดเมนู">☰</button>
+        <label class="search"><span>⌕</span><input id="search" type="search" placeholder="ค้นหาหัวข้อ Lab สไลด์ หรือคำสั่ง" /></label>
+        <div class="density-switch" role="group" aria-label="ความหนาแน่นของเนื้อหา">
+          <button type="button" class="density-option" data-density="normal">Normal</button>
+          <button type="button" class="density-option" data-density="compact">Compact</button>
+        </div>
+        <button class="icon-button" id="theme-button" aria-label="เปลี่ยนโหมดสี" title="เปลี่ยนโหมดสี">◐</button>
+        <button class="icon-button" id="whiteboard-button" data-view="whiteboard" aria-label="เปิด Whiteboard" title="Whiteboard">🖊️</button>
+        <button class="icon-button chat-button" id="chat-button" aria-label="เปิดแชตถาม-ตอบ" title="แชตถาม-ตอบ">💬<span class="chat-badge" id="chat-badge" hidden>0</span></button>
+      </header>
+      <div id="app" class="app"></div>
+    </main>
+    <template id="toast-template"><div class="toast" role="status"></div></template>
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal-box" role="dialog" aria-modal="true">
+        <button type="button" class="modal-close" id="modal-close" aria-label="ปิด">✕</button>
+        <div id="modal-content"></div>
+      </div>
+    </div>
+    <div class="name-gate-overlay" id="name-gate-overlay">
+      <form class="name-gate-box" id="name-gate-form" role="dialog" aria-modal="true">
+        <img class="name-gate-mascot" src="assets/icon.svg" alt="" />
+        <h2>ก่อนเริ่มใช้งาน กรุณาบอกชื่อของคุณ</h2>
+        <p class="lede">ใช้ระบุผลที่คุณ <strong>กดส่งเอง</strong> เท่านั้น (แบบทดสอบ ผลตรวจ Lab ลิงก์ผลงาน) ถ้าไม่กดส่ง ข้อมูลอยู่ในเบราว์เซอร์ของคุณเท่านั้น กรอกชื่อ นามสกุล หรือชื่อเล่นตามด้วยแผนก เช่น "มิ้นท์ MT" (อย่างน้อย 2 คำ) ห้ามใส่ชื่อลูกค้าหรือบุคคลอื่น</p>
+        <input id="name-gate-input" type="text" placeholder="เช่น มิ้นท์ MT หรือ สมชาย ใจดี" autocomplete="name" required />
+        <p class="name-gate-error" id="name-gate-error" hidden>กรุณากรอกอย่างน้อย 2 คำ (ชื่อ นามสกุล หรือ ชื่อเล่น แผนก)</p>
+        <button type="submit" class="primary-button">เริ่มใช้งาน</button>
+      </form>
+    </div>
+    <aside class="chat-panel" id="chat-panel" aria-label="แชตถาม-ตอบ">
+      <div class="chat-panel-header">
+        <h2>💬 แชตถาม-ตอบ</h2>
+        <button type="button" class="chat-panel-close" id="chat-panel-close" aria-label="ปิดแชต">✕</button>
+      </div>
+      <p class="chat-note">ทุกคนในคลาสเห็นข้อความเดียวกัน ห้ามพิมพ์ชื่อบุคคลอื่นหรือข้อมูลลูกค้า</p>
+      <div class="chat-messages" id="chat-messages"><p class="chat-empty">ยังไม่มีข้อความ เริ่มพิมพ์คำถามได้เลย</p></div>
+      <form class="chat-input-row" id="chat-form">
+        <input type="text" id="chat-input" placeholder="พิมพ์คำถามของคุณ..." maxlength="500" autocomplete="off" required />
+        <button type="submit">ส่ง</button>
+      </form>
+    </aside>
+    <div class="chat-panel-backdrop" id="chat-panel-backdrop"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="config.js"></script>
+    <script src="agenda-data.js"></script>
+    <script src="chapters-data.js"></script>
+    <script src="prompts-data.js"></script>
+    <script src="labs-data.js"></script>
+    <script src="assessment-data.js"></script>
+    <script src="verification-data.js"></script>
+    <script src="slides-data.js"></script>
+    <!-- เฉพาะเครื่องผู้สอน: ไฟล์นี้ไม่อยู่บน GitHub (ดู .gitignore) ถ้าไม่มีไฟล์ แอปทำงานปกติ -->
+    <script src="instructor-data.js" onerror="void 0"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
