@@ -9,12 +9,12 @@ const APP_CONFIG = {
   GAS_ENDPOINT: "https://script.google.com/macros/s/AKfycbxvNZiewuGaCiIyKLoA95W5yyn4-MwevrK7TCw96oEjjW_98x-a0qPPPoAOmXXkGJqD/exec",
   GAS_SECRET: "!2948",
   // เปิดโหมดผู้สอนบนเครื่องของคุณ: เข้าเว็บด้วย ?instructor=<ค่านี้> (เป็นแค่สวิตช์แสดงเมนู ไม่ใช่การล็อกอิน)
-  INSTRUCTOR_URL_FLAG: "gn-teacher",
+  INSTRUCTOR_URL_FLAG: "chnnchnn",
   CLASS_LABEL: "Gemini × Gemini Notebook · คลาส 3 ชั่วโมง",
   // เกียรติบัตรเข้าร่วมอบรม (ผู้เรียนสร้างเองในเบราว์เซอร์ ไม่ส่งข้อมูลไปที่ใด) — ใส่ชื่อหน่วยงานและผู้ลงนามของคุณ
-  CERT_ORG: "",
-  CERT_ISSUER: "ผู้สอน",
-  CERT_COURSE: "Gemini × Gemini Notebook (เดิมชื่อ NotebookLM)",
+  CERT_ORG: "THANATKORN INTERNATIONAL",
+  CERT_ISSUER: "Channarong PIPATWATANAKUL",
+  CERT_COURSE: "Gemini Notebook 2026-September-21",
   // ห้องแชตของคลาส: ลิงก์ห้อง Google Chat (ผู้เรียนต้องอยู่ในองค์กรเดียวกัน) เว้นว่าง = ปุ่มแจ้งว่ายังไม่ได้ตั้งค่า
   CHAT_URL: "https://chat.google.com/room/AAQAZhQsKdo?cls=7",
   COMPANY_LABEL: "กรณีศึกษา: บริษัท ไร้ควันพันล้าน จำกัด (บริษัทสมมติ)",
