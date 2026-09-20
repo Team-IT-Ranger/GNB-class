@@ -934,9 +934,40 @@ function renderAssessment(tab, mode) {
 function certificateEligibility() {
   return { post: Boolean(quizState("post")), evaluation: Boolean(stored("gn-confidence-post", null)) };
 }
+// รูปลายเซ็น (ถ้ามี) ต้องเป็นไฟล์ในเว็บ (assets/...) หรือ https เท่านั้น เว้นว่าง = เหลือช่องว่างไว้เซ็นสดหลังพิมพ์
+function certSignImg(src) {
+  return src && /^(assets\/[\w\-./]+|https:\/\/[^\s"'<>]+)$/.test(src) ? `<div class="cert-sign-img" style="background-image:url('${esc(src)}')"></div>` : "";
+}
+const CERT_SPARK_PATH = "M12 0C12.8 6.6 17.4 11.2 24 12C17.4 12.8 12.8 17.4 12 24C11.2 17.4 6.6 12.8 0 12C6.6 11.2 11.2 6.6 12 0Z";
+function certGradientDef(id) {
+  return `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4285f4"/><stop offset=".55" stop-color="#9b72cb"/><stop offset="1" stop-color="#d96570"/></linearGradient>`;
+}
+function certNetSvg(cls) {
+  const nodes = [[286, 14], [238, 44], [268, 88], [196, 72], [176, 20], [226, 128], [148, 108], [284, 150], [118, 52]];
+  const edges = [[0, 1], [1, 2], [1, 3], [3, 4], [1, 4], [2, 5], [3, 5], [3, 6], [2, 7], [4, 8], [6, 8]];
+  const g = edges.map(([i, j]) => `<line x1="${nodes[i][0]}" y1="${nodes[i][1]}" x2="${nodes[j][0]}" y2="${nodes[j][1]}"/>`).join("") + nodes.map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="${i % 3 === 0 ? 4 : 2.6}"/>`).join("");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="170" viewBox="0 0 300 170"><g stroke="#4285f4" stroke-opacity=".28" stroke-width="1" fill="#4285f4" fill-opacity=".45">${g}</g></svg>`;
+  // เป็นภาพพื้นหลัง (ไม่ใช่ <svg> ตรง ๆ) เพราะตัวสร้าง PDF วาด SVG ที่ขนาดเป็นหน่วย cqw ไม่ได้
+  return `<div class="cert-net ${cls}" style="background-image:url('data:image/svg+xml;utf8,${encodeURIComponent(svg)}')"></div>`;
+}
 function certificateHtml(name) {
-  const dateText = new Date().toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" });
-  return `<div class="cert-sheet"><div class="cert-border"><div class="cert-kicker">CERTIFICATE OF PARTICIPATION</div><h1>เกียรติบัตรเข้าร่วมอบรม</h1><p class="cert-line">ขอมอบเกียรติบัตรนี้เพื่อแสดงว่า</p><div class="cert-name">${esc(name)}</div><p class="cert-line">ได้เข้าร่วมอบรมเชิงปฏิบัติการ 3 ชั่วโมง</p><div class="cert-course">${esc(APP_CONFIG.CERT_COURSE || "Gemini × Gemini Notebook")}</div><p class="cert-line">${esc(APP_CONFIG.CERT_ORG || "")}</p><div class="cert-foot"><span>วันที่ ${esc(dateText)}</span><span>${esc(APP_CONFIG.CERT_ISSUER || "ผู้สอน")}</span></div></div></div>`;
+  const c = APP_CONFIG;
+  const nameSize = name.length > 30 ? 3.4 : name.length > 22 ? 4 : 5;
+  const hasSchedule = typeof classSchedule !== "undefined" && classSchedule.date;
+  const dateText = hasSchedule ? classSchedule.date : new Date().toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" });
+  const timeText = hasSchedule && classSchedule.time ? ` · ${classSchedule.time}` : "";
+  const spark = (id) => `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs>${certGradientDef(id)}</defs><path d="${CERT_SPARK_PATH}" fill="url(#${id})"/></svg>`;
+  const sign = (img, signerName, titleHtml) => `<div class="cert-sign"><div class="cert-sign-space">${certSignImg(img)}</div><div class="cert-sign-line"></div><div class="cert-sign-name">${esc(signerName || "")}</div><div class="cert-sign-title">${titleHtml}</div></div>`;
+  return `<div class="cert-sheet"><div class="cert-glow"></div>${certNetSvg("cert-net-tr")}<div class="cert-bar"></div><div class="cert-frame"></div>
+  <div class="cert-inner">
+    <div class="cert-head"><div class="cert-spark">${spark("cgh")}</div><div class="cert-kicker">CERTIFICATE OF PARTICIPATION</div><h1 class="cert-title">เกียรติบัตรเข้าร่วมอบรม</h1></div>
+    <div class="cert-mid"><p class="cert-line">ขอมอบเกียรติบัตรนี้เพื่อแสดงว่า</p><div class="cert-name" style="font-size:${nameSize}cqw">${esc(name)}</div><div class="cert-namebar"></div><p class="cert-line">ได้เข้าร่วมอบรมเชิงปฏิบัติการ 3 ชั่วโมง</p><div class="cert-course">${esc(c.CERT_COURSE || "Gemini × Gemini Notebook")}</div><div class="cert-meta">${esc(dateText)}${esc(timeText)}${c.CERT_ORG ? " · " + esc(c.CERT_ORG) : ""}</div></div>
+    <div class="cert-sign-row">
+      ${sign(c.CERT_SIGN_INSTRUCTOR_IMG, c.CERT_ISSUER || "", "ผู้สอน · Instructor")}
+      <div class="cert-seal">${spark("cgs")}<span>GEMINI × NOTEBOOK</span></div>
+      ${sign(c.CERT_SIGN_MD_IMG, c.CERT_MD_NAME || "", "Managing Director")}
+    </div>
+  </div></div>`;
 }
 function renderCertificate() {
   const e = certificateEligibility();
@@ -960,7 +991,7 @@ async function downloadCertificate() {
     root.className = "cert-export-root";
     root.innerHTML = certificateHtml(name);
     document.body.appendChild(root);
-    const canvas = await html2canvas(root, { scale: 2, backgroundColor: "#ffffff" });
+    const canvas = await html2canvas(root, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
     document.body.removeChild(root);
     const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "landscape" });
     const w = pdf.internal.pageSize.getWidth();

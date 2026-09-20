@@ -14,6 +14,11 @@ const APP_CONFIG = {
   // เกียรติบัตรเข้าร่วมอบรม (ผู้เรียนสร้างเองในเบราว์เซอร์ ไม่ส่งข้อมูลไปที่ใด) — ใส่ชื่อหน่วยงานและผู้ลงนามของคุณ
   CERT_ORG: "THANATKORN INTERNATIONAL",
   CERT_ISSUER: "Channarong PIPATWATANAKUL",
+  // ลายเซ็นบนเกียรติบัตร: ใส่ชื่อกรรมการผู้จัดการใน CERT_MD_NAME (เว้นว่าง = เหลือช่องว่างไว้เขียนสด)
+  // รูปลายเซ็น (PNG พื้นโปร่งใส) วางในโฟลเดอร์ assets/ แล้วใส่พาธ เช่น "assets/sign-instructor.png" เว้นว่าง = เหลือช่องว่างไว้เซ็นสดหลังพิมพ์
+  CERT_MD_NAME: "",
+  CERT_SIGN_INSTRUCTOR_IMG: "",
+  CERT_SIGN_MD_IMG: "",
   CERT_COURSE: "Gemini Notebook 2026-September-21",
   // ห้องแชตของคลาส: ลิงก์ห้อง Google Chat (ผู้เรียนต้องอยู่ในองค์กรเดียวกัน) เว้นว่าง = ปุ่มแจ้งว่ายังไม่ได้ตั้งค่า
   CHAT_URL: "https://chat.google.com/room/AAQAZhQsKdo?cls=7",
