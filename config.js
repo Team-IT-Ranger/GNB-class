@@ -19,7 +19,7 @@ const APP_CONFIG = {
   CERT_MD_NAME: "Sonthaya THONG",
   CERT_SIGN_INSTRUCTOR_IMG: "",
   CERT_SIGN_MD_IMG: "",
-  CERT_COURSE: "Gemini Notebook 2026-September-21",
+  CERT_COURSE: "Gemini Notebook 2026",
   // ห้องแชตของคลาส: ลิงก์ห้อง Google Chat (ผู้เรียนต้องอยู่ในองค์กรเดียวกัน) เว้นว่าง = ปุ่มแจ้งว่ายังไม่ได้ตั้งค่า
   CHAT_URL: "https://chat.google.com/room/AAQAZhQsKdo?cls=7",
   COMPANY_LABEL: "กรณีศึกษา: บริษัท ไร้ควันพันล้าน จำกัด (บริษัทสมมติ)",
