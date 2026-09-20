@@ -16,6 +16,6 @@ const APP_CONFIG = {
   CERT_ISSUER: "ผู้สอน",
   CERT_COURSE: "Gemini × Gemini Notebook (เดิมชื่อ NotebookLM)",
   // ห้องแชตของคลาส: ลิงก์ห้อง Google Chat (ผู้เรียนต้องอยู่ในองค์กรเดียวกัน) เว้นว่าง = ปุ่มแจ้งว่ายังไม่ได้ตั้งค่า
-  CHAT_URL: "https://chat.google.com/room/AAQAN5srWjU?cls=1",
+  CHAT_URL: "https://chat.google.com/room/AAQAZhQsKdo?cls=7",
   COMPANY_LABEL: "กรณีศึกษา: บริษัท ไร้ควันพันล้าน จำกัด (บริษัทสมมติ)",
 };
