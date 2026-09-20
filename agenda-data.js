@@ -2,6 +2,9 @@
 // โครงหลักสูตรตามที่ Gemini ออกแบบ (Part 1 แนวคิดและเตรียมข้อมูล → Part 2 เจาะลึก Notebook → Part 3 Workshop → ประเมินและเกียรติบัตร)
 // ไทม์ไลน์นี้คือ "แหล่งความจริงเดียว" ของเวลา (รวม 180 นาทีพอดี) ส่วนที่ติดป้าย "เสริม" ไม่นับในเวลาคลาส
 
+// วันเวลาของคลาสรอบแรก (start/end ในไทม์ไลน์คือนาทีนับจากเริ่มคลาส ส่วน clock คือเวลานาฬิกาจริง)
+const classSchedule = { date: "วันจันทร์ที่ 21 กันยายน 2569", time: "13:30–16:30 น.", note: "เริ่ม 13:30 · พัก 14:35–14:45 · จบ 16:30" };
+
 const learningObjectives = [
   { id: "LO1", text: "อธิบายบทบาทที่ต่างกันของ Gemini และ Gemini Notebook และเล่า Workflow: Gemini (Data Prep) → Notebook (Deep Research)" },
   { id: "LO2", text: "เขียน Master Prompt ที่มีบทบาท บริบท งาน รูปแบบ และข้อห้ามชัดเจนได้" },
@@ -13,12 +16,12 @@ const learningObjectives = [
 
 // slide = เลขสไลด์แรกของช่วง (ตรงกับ slides-data.js) · lab = Lab ที่ทำในช่วงนั้น
 const courseTimeline = [
-  { start: "0:00", end: "0:10", block: "เปิดคลาส", minutes: 10, lo: "LO1", activity: "ผลลัพธ์ 3 ชิ้น · ไทม์ไลน์ · กติกาข้อมูล 4 ข้อ · Lab 0 ตรวจบัญชีและฟีเจอร์ (5)", lab: "0", slide: 1 },
-  { start: "0:10", end: "1:05", block: "Part 1 · Concept & Data Preparation", minutes: 55, lo: "LO1-LO3, LO6", activity: "บรรยายย่อ 20 นาที (Notebook คืออะไร · ข้อจำกัดและ Workflow · Protect · 4 ขั้น Clean→Outline · Master Prompt) + Lab 1 ปิดชื่อ (8) + Lab 2 Master Prompt (15) + Lab 3 Gem (9) + ตรวจกลับ/เดโม", lab: "1-3", slide: 5 },
-  { start: "1:05", end: "1:15", block: "พัก", minutes: 10, brk: true, activity: "ตรวจว่ามีไฟล์ _masked อย่างน้อย 3 ไฟล์" },
-  { start: "1:15", end: "1:55", block: "Part 2 · Notebook Deep Dive", minutes: 40, lo: "LO4, LO5", activity: "บรรยายย่อ 10 นาที (Grounded & แหล่งข้อมูล · คำถาม 4 ประเภท · Citation · ข้อขัดแย้ง · Studio Artifacts) + Lab 4 สร้าง Notebook (15) + Lab 5 ข้อขัดแย้งและ Studio (15)", lab: "4-5", slide: 21 },
-  { start: "1:55", end: "2:40", block: "Part 3 · Hands-on Workshop", minutes: 45, lo: "LO3-LO6", activity: "แนะนำโจทย์ 2 นาที + ลงมือทำตามสายงาน 28 นาที + นำเสนอกลุ่มและแลกเปลี่ยนเทคนิค Prompting 15 นาที", lab: "W", slide: 30 },
-  { start: "2:40", end: "3:00", block: "Evaluation & Q&A", minutes: 20, lo: "ทุกข้อ", activity: "Post-test 5 ข้อ (6) + แบบประเมินและเกียรติบัตร (6) + สรุป 3 สิ่งที่ต้องจำและแผน 7 วัน (4) + ถามตอบ (4)", lab: "", slide: 34 },
+  { start: "0:00", end: "0:10", clock: "13:30–13:40", block: "เปิดคลาส", minutes: 10, lo: "LO1", activity: "ผลลัพธ์ 3 ชิ้น · ไทม์ไลน์ · กติกาข้อมูล 4 ข้อ · Lab 0 ตรวจบัญชีและฟีเจอร์ (5)", lab: "0", slide: 1 },
+  { start: "0:10", end: "1:05", clock: "13:40–14:35", block: "Part 1 · Concept & Data Preparation", minutes: 55, lo: "LO1-LO3, LO6", activity: "บรรยายย่อ 20 นาที (Notebook คืออะไร · ข้อจำกัดและ Workflow · Protect · 4 ขั้น Clean→Outline · Master Prompt) + Lab 1 ปิดชื่อ (8) + Lab 2 Master Prompt (15) + Lab 3 Gem (9) + ตรวจกลับ/เดโม", lab: "1-3", slide: 5 },
+  { start: "1:05", end: "1:15", clock: "14:35–14:45", block: "พัก", minutes: 10, brk: true, activity: "ตรวจว่ามีไฟล์ _masked อย่างน้อย 3 ไฟล์" },
+  { start: "1:15", end: "1:55", clock: "14:45–15:25", block: "Part 2 · Notebook Deep Dive", minutes: 40, lo: "LO4, LO5", activity: "บรรยายย่อ 10 นาที (Grounded & แหล่งข้อมูล · คำถาม 4 ประเภท · Citation · ข้อขัดแย้ง · Studio Artifacts) + Lab 4 สร้าง Notebook (15) + Lab 5 ข้อขัดแย้งและ Studio (15)", lab: "4-5", slide: 21 },
+  { start: "1:55", end: "2:40", clock: "15:25–16:10", block: "Part 3 · Hands-on Workshop", minutes: 45, lo: "LO3-LO6", activity: "แนะนำโจทย์ 2 นาที + ลงมือทำตามสายงาน 28 นาที + นำเสนอกลุ่มและแลกเปลี่ยนเทคนิค Prompting 15 นาที", lab: "W", slide: 30 },
+  { start: "2:40", end: "3:00", clock: "16:10–16:30", block: "Evaluation & Q&A", minutes: 20, lo: "ทุกข้อ", activity: "Post-test 5 ข้อ (6) + แบบประเมินและเกียรติบัตร (6) + สรุป 3 สิ่งที่ต้องจำและแผน 7 วัน (4) + ถามตอบ (4)", lab: "", slide: 34 },
 ];
 
 // ส่วนเสริม: ไม่อยู่ในเวลา 180 นาที ทำต่อที่บ้านหรือถ้าเวลาเหลือ

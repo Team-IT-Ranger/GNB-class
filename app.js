@@ -677,11 +677,11 @@ function renderAgendaPage() {
   const rows = courseTimeline.map(r => {
     const slideCell = r.slide ? `<button type="button" class="link-button" data-view="slides" data-id="${r.slide}">สไลด์ ${r.slide}+</button>` : "";
     const labCell = r.lab === "W" ? `<button type="button" class="link-button" data-view="workshop">Workshop</button>` : (r.lab ? `<button type="button" class="link-button" data-view="lab" data-id="${r.lab.split("-")[0]}">Lab ${esc(r.lab)}</button>` : "");
-    return `<tr class="${r.brk ? "agenda-break-row" : "agenda-hour-row"}"><td class="agenda-duration-cell"><strong>${esc(r.start)}–${esc(r.end)}</strong><br><small>${r.minutes} นาที</small></td><td><strong>${esc(r.block)}</strong>${r.lo ? `<br><small class="muted">${esc(r.lo)}</small>` : ""}</td><td>${esc(r.activity)}</td><td>${slideCell} ${labCell}</td></tr>`;
+    return `<tr class="${r.brk ? "agenda-break-row" : "agenda-hour-row"}"><td class="agenda-duration-cell"><strong>${esc(r.clock)}</strong><br><small>${r.minutes} นาที · นาทีที่ ${esc(r.start)}–${esc(r.end)}</small></td><td><strong>${esc(r.block)}</strong>${r.lo ? `<br><small class="muted">${esc(r.lo)}</small>` : ""}</td><td>${esc(r.activity)}</td><td>${slideCell} ${labCell}</td></tr>`;
   }).join("");
-  return `<section><div class="eyebrow">หน้าสรุปภาพรวม</div><h1>Class Agenda</h1><p class="lede">ไทม์ไลน์คลาส 3 ชั่วโมงแบบนาทีต่อนาที (รวม ${total} นาทีพอดี รวมพัก 10 นาที) ส่วนที่เป็น 'เสริม' ไม่นับในเวลาคลาส ทำต่อที่บ้านหรือเมื่อเวลาเหลือ</p>${venueBadgeHtml()}
+  return `<section><div class="eyebrow">หน้าสรุปภาพรวม</div><h1>Class Agenda</h1><p class="lede"><strong>${esc(classSchedule.date)} เวลา ${esc(classSchedule.time)}</strong> (${esc(classSchedule.note)})<br>ไทม์ไลน์คลาส 3 ชั่วโมงแบบนาทีต่อนาที (รวม ${total} นาทีพอดี รวมพัก 10 นาที) ส่วนที่เป็น 'เสริม' ไม่นับในเวลาคลาส ทำต่อที่บ้านหรือเมื่อเวลาเหลือ</p>${venueBadgeHtml()}
   <h2 style="margin-top:28px">จุดประสงค์การเรียนรู้</h2><ol class="steps lo-list">${learningObjectives.map(l => `<li><strong>${esc(l.id)}</strong> ${esc(l.text)}</li>`).join("")}</ol>
-  <h2 style="margin-top:32px">ไทม์ไลน์ 180 นาที</h2>
+  <h2 style="margin-top:32px">ไทม์ไลน์ 180 นาที (13:30–16:30)</h2>
   <div class="agenda-table-wrap"><table class="agenda-table"><thead><tr><th>เวลา</th><th>ช่วง</th><th>กิจกรรม</th><th>ไปที่</th></tr></thead><tbody>${rows}</tbody></table></div>
   <h3 style="margin-top:24px">ส่วนเสริม (ไม่นับเวลาคลาส)</h3><ul>${optionalItems.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
   <h2 style="margin-top:32px">สิ่งที่ต้องเตรียมก่อนคลาส</h2>
