@@ -1012,12 +1012,17 @@ async function downloadCertificate() {
     root.className = "cert-export-root";
     root.innerHTML = certificateHtml(name, certId);
     document.body.appendChild(root);
-    const canvas = await html2canvas(root, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
+    // ความละเอียดสูงเพื่อให้โลโก้และตัวอักษรคมเมื่อพิมพ์ (A4 แนวนอน ~ 3370 px ที่ scale 3); ถ้าเครื่องสร้างภาพใหญ่ไม่ไหวให้ลดลง
+    let canvas = null;
+    for (const scale of [4, 3, 2]) {
+      try { canvas = await html2canvas(root, { scale, backgroundColor: "#ffffff", useCORS: true }); if (canvas && canvas.width > 0 && canvas.toDataURL("image/jpeg", 0.5).length > 100) break; } catch { canvas = null; }
+    }
     document.body.removeChild(root);
+    if (!canvas) throw new Error("render failed");
     const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "landscape" });
     const w = pdf.internal.pageSize.getWidth();
     const h = pdf.internal.pageSize.getHeight();
-    pdf.addImage(canvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, w, h);
+    pdf.addImage(canvas.toDataURL("image/jpeg", 0.97), "JPEG", 0, 0, w, h);
     pdf.save("เกียรติบัตร-Gemini-Notebook.pdf");
     toast("ดาวน์โหลดเกียรติบัตรแล้ว");
   } catch (err) {
