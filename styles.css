@@ -489,11 +489,12 @@ select { font: inherit; padding: 9px 10px; border: 1px solid var(--line); border
 .cert-net-tr { top: 0; right: 0; }
 .cert-bar { position: absolute; left: 0; right: 0; top: 0; height: 1cqw; background: linear-gradient(90deg, #4285f4, #9b72cb 55%, #d96570); }
 .cert-frame { position: absolute; inset: 3.2cqw; border: 1px solid #dbe3ee; }
-.cert-inner { position: absolute; inset: 0; padding: 5cqw 8cqw 6.2cqw; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; }
+.cert-inner { position: absolute; inset: 0; padding: 5cqw 8cqw 6.2cqw; padding-top: round(5cqw, .25px); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; }
 .cert-head { display: flex; flex-direction: column; align-items: center; }
 .cert-id { position: absolute; right: 5.4cqw; top: 4.6cqw; z-index: 2; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .95cqw; letter-spacing: .08em; color: #475569; text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff; }
-.cert-logo-co { position: absolute; left: 6cqw; top: 5.2cqw; width: 17cqw; height: 4.5cqw; background: url(assets/logo-thanatkorn.png) no-repeat left center / contain; }
-.cert-logo-tnk { width: 12.2cqw; height: 5.6cqw; margin-bottom: .9cqw; background: url(assets/logo-tnk-growth.png) no-repeat center / contain; }
+/* โลโก้: ไฟล์ภาพถูกย่อไว้ที่ขนาดพอดีกับตอนสร้าง PDF (scale 4) และวางที่พิกเซลเต็ม เพื่อไม่ให้ถูกสุ่มภาพซ้ำจนเบลอ */
+.cert-logo-co { position: absolute; left: 6cqw; left: round(6cqw, .25px); top: 5.2cqw; top: round(5.2cqw, .25px); width: 17cqw; width: round(17cqw, .25px); height: 4.78cqw; height: round(4.78cqw, .25px); background: url(assets/logo-thanatkorn.png) no-repeat 0 0 / 100% 100%; }
+.cert-logo-tnk { width: 11.9cqw; width: round(11.9cqw, .5px); height: 5.6cqw; height: round(5.6cqw, 1px); margin-bottom: .9cqw; background: url(assets/logo-tnk-growth.png) no-repeat 0 0 / 100% 100%; }
 .cert-spark { width: 2.4cqw; height: 2.4cqw; margin-bottom: 1cqw; }
 .cert-spark svg { width: 100%; height: 100%; }
 .cert-kicker { font-size: 1.15cqw; letter-spacing: .34em; color: #64748b; font-weight: 600; padding-left: .34em; }
