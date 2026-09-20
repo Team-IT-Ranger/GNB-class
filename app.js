@@ -1023,7 +1023,9 @@ async function downloadCertificate() {
     const w = pdf.internal.pageSize.getWidth();
     const h = pdf.internal.pageSize.getHeight();
     pdf.addImage(canvas.toDataURL("image/jpeg", 0.97), "JPEG", 0, 0, w, h);
-    pdf.save("เกียรติบัตร-Gemini-Notebook.pdf");
+    // ชื่อไฟล์: ตัดอักขระที่ระบบไฟล์ไม่รับ และอักขระควบคุม ย่อช่องว่างเป็น _ จำกัดความยาว
+    const safeName = name.replace(/[\\/:*?"<>|\u0000-\u001f]/g, "").replace(/\s+/g, "_").replace(/^[._]+|[._]+$/g, "").slice(0, 60);
+    pdf.save(`เกียรติบัตร-Gemini-Notebook${safeName ? "-" + safeName : ""}.pdf`);
     toast("ดาวน์โหลดเกียรติบัตรแล้ว");
   } catch (err) {
     console.error(err);
