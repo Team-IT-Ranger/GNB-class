@@ -958,9 +958,9 @@ function certificateHtml(name) {
   const timeText = hasSchedule && classSchedule.time ? ` · ${classSchedule.time}` : "";
   const spark = (id) => `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs>${certGradientDef(id)}</defs><path d="${CERT_SPARK_PATH}" fill="url(#${id})"/></svg>`;
   const sign = (img, signerName, titleHtml) => `<div class="cert-sign"><div class="cert-sign-space">${certSignImg(img)}</div><div class="cert-sign-line"></div><div class="cert-sign-name">${esc(signerName || "")}</div><div class="cert-sign-title">${titleHtml}</div></div>`;
-  return `<div class="cert-sheet"><div class="cert-glow"></div>${certNetSvg("cert-net-tr")}<div class="cert-bar"></div><div class="cert-frame"></div>
+  return `<div class="cert-sheet"><div class="cert-glow"></div>${certNetSvg("cert-net-tr")}<div class="cert-bar"></div><div class="cert-frame"></div><div class="cert-logo-co"></div>
   <div class="cert-inner">
-    <div class="cert-head"><div class="cert-spark">${spark("cgh")}</div><div class="cert-kicker">CERTIFICATE OF PARTICIPATION</div><h1 class="cert-title">เกียรติบัตรเข้าร่วมอบรม</h1></div>
+    <div class="cert-head"><div class="cert-logo-tnk"></div><div class="cert-spark">${spark("cgh")}</div><div class="cert-kicker">CERTIFICATE OF PARTICIPATION</div><h1 class="cert-title">เกียรติบัตรเข้าร่วมอบรม</h1></div>
     <div class="cert-mid"><p class="cert-line">ขอมอบเกียรติบัตรนี้เพื่อแสดงว่า</p><div class="cert-name" style="font-size:${nameSize}cqw">${esc(name)}</div><div class="cert-namebar"></div><p class="cert-line">ได้เข้าร่วมอบรมเชิงปฏิบัติการ 3 ชั่วโมง</p><div class="cert-course">${esc(c.CERT_COURSE || "Gemini × Gemini Notebook")}</div><div class="cert-meta">${esc(dateText)}${esc(timeText)}${c.CERT_ORG ? " · " + esc(c.CERT_ORG) : ""}</div></div>
     <div class="cert-sign-row">
       ${sign(c.CERT_SIGN_INSTRUCTOR_IMG, c.CERT_ISSUER || "", "ผู้สอน · Instructor")}
