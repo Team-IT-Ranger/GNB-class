@@ -491,6 +491,7 @@ select { font: inherit; padding: 9px 10px; border: 1px solid var(--line); border
 .cert-frame { position: absolute; inset: 3.2cqw; border: 1px solid #dbe3ee; }
 .cert-inner { position: absolute; inset: 0; padding: 5cqw 8cqw 6.2cqw; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; }
 .cert-head { display: flex; flex-direction: column; align-items: center; }
+.cert-id { position: absolute; right: 5.4cqw; bottom: 3.9cqw; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .9cqw; letter-spacing: .08em; color: #94a3b8; }
 .cert-logo-co { position: absolute; left: 6cqw; top: 5.2cqw; width: 17cqw; height: 4.5cqw; background: url(assets/logo-thanatkorn.png) no-repeat left center / contain; }
 .cert-logo-tnk { width: 12.2cqw; height: 5.6cqw; margin-bottom: .9cqw; background: url(assets/logo-tnk-growth.png) no-repeat center / contain; }
 .cert-spark { width: 2.4cqw; height: 2.4cqw; margin-bottom: 1cqw; }

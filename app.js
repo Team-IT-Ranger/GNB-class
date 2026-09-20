@@ -950,7 +950,7 @@ function certNetSvg(cls) {
   // เป็นภาพพื้นหลัง (ไม่ใช่ <svg> ตรง ๆ) เพราะตัวสร้าง PDF วาด SVG ที่ขนาดเป็นหน่วย cqw ไม่ได้
   return `<div class="cert-net ${cls}" style="background-image:url('data:image/svg+xml;utf8,${encodeURIComponent(svg)}')"></div>`;
 }
-function certificateHtml(name) {
+function certificateHtml(name, certId) {
   const c = APP_CONFIG;
   const nameSize = name.length > 30 ? 3.4 : name.length > 22 ? 4 : 5;
   const hasSchedule = typeof classSchedule !== "undefined" && classSchedule.date;
@@ -958,7 +958,7 @@ function certificateHtml(name) {
   const timeText = hasSchedule && classSchedule.time ? ` · ${classSchedule.time}` : "";
   const spark = (id) => `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs>${certGradientDef(id)}</defs><path d="${CERT_SPARK_PATH}" fill="url(#${id})"/></svg>`;
   const sign = (img, signerName, titleHtml) => `<div class="cert-sign"><div class="cert-sign-space">${certSignImg(img)}</div><div class="cert-sign-line"></div><div class="cert-sign-name">${esc(signerName || "")}</div><div class="cert-sign-title">${titleHtml}</div></div>`;
-  return `<div class="cert-sheet"><div class="cert-glow"></div>${certNetSvg("cert-net-tr")}<div class="cert-bar"></div><div class="cert-frame"></div><div class="cert-logo-co"></div>
+  return `<div class="cert-sheet"><div class="cert-glow"></div>${certNetSvg("cert-net-tr")}<div class="cert-bar"></div><div class="cert-frame"></div><div class="cert-logo-co"></div><div class="cert-id">${backendReady() ? (certId ? "CERT ID · " + esc(certId) : "CERT ID · ออกให้ตอนดาวน์โหลด") : ""}</div>
   <div class="cert-inner">
     <div class="cert-head"><div class="cert-logo-tnk"></div><div class="cert-spark">${spark("cgh")}</div><div class="cert-kicker">CERTIFICATE OF PARTICIPATION</div><h1 class="cert-title">เกียรติบัตรเข้าร่วมอบรม</h1></div>
     <div class="cert-mid"><p class="cert-line">ขอมอบเกียรติบัตรนี้เพื่อแสดงว่า</p><div class="cert-name" style="font-size:${nameSize}cqw">${esc(name)}</div><div class="cert-namebar"></div><p class="cert-line">ได้เข้าร่วมอบรมเชิงปฏิบัติการ 3 ชั่วโมง</p><div class="cert-course">${esc(c.CERT_COURSE || "Gemini × Gemini Notebook")}</div><div class="cert-meta">${esc(dateText)}${esc(timeText)}${c.CERT_ORG ? " · " + esc(c.CERT_ORG) : ""}</div></div>
@@ -981,15 +981,36 @@ function renderCertificate() {
   ${ok ? `<div class="cert-preview">${certificateHtml(name)}</div><p><button type="button" class="primary-button" data-action="download-certificate">⬇ ดาวน์โหลดเกียรติบัตร (PDF)</button></p>` : `<p class="muted">ทำครบทุกข้อด้านบนแล้วปุ่มดาวน์โหลดจะปรากฏ</p>`}
   </section>`;
 }
+// เลขตรวจสอบเกียรติบัตร: สุ่มครั้งเดียวต่อชื่อ (ดาวน์โหลดซ้ำได้เลขเดิม) รูปแบบ GNB-yymmdd-XXXXXXXX (ไม่มี 0 O 1 I L)
+function certIdFor(name) {
+  try {
+    const saved = JSON.parse(localStorage.getItem("gn-cert-id") || "null");
+    if (saved && saved.name === name && /^GNB-\d{6}-[A-HJ-NP-Z2-9]{8}$/.test(saved.id)) return saved.id;
+  } catch { /* เริ่มใหม่ */ }
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = crypto.getRandomValues(new Uint8Array(8));
+  const now = new Date();
+  const ymd = String(now.getFullYear()).slice(2) + String(now.getMonth() + 1).padStart(2, "0") + String(now.getDate()).padStart(2, "0");
+  const id = `GNB-${ymd}-${Array.from(bytes, b => alphabet[b & 31]).join("")}`;
+  localStorage.setItem("gn-cert-id", JSON.stringify({ name, id }));
+  return id;
+}
 async function downloadCertificate() {
   const name = studentName();
   toast("กำลังสร้างเกียรติบัตร...");
   try {
+    let certId = "";
+    if (backendReady()) {
+      // ลงทะเบียนเลขกับระบบก่อนออกไฟล์ เพื่อให้ผู้สอนตรวจย้อนได้ว่าเลขนี้ออกให้ใคร
+      certId = certIdFor(name);
+      const registered = await syncToBackend("certificate", { certId, course: APP_CONFIG.CERT_COURSE || "", classDate: typeof classSchedule !== "undefined" ? classSchedule.date : "" });
+      if (!registered) { toast("ลงทะเบียนเลข Cert ID ไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่อีกครั้ง"); return; }
+    }
     await ensurePdfLibs();
     const { jsPDF } = window.jspdf;
     const root = document.createElement("div");
     root.className = "cert-export-root";
-    root.innerHTML = certificateHtml(name);
+    root.innerHTML = certificateHtml(name, certId);
     document.body.appendChild(root);
     const canvas = await html2canvas(root, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
     document.body.removeChild(root);
