@@ -6,6 +6,9 @@ const GAS_ENDPOINT = APP_CONFIG.GAS_ENDPOINT;
 const GAS_SECRET = APP_CONFIG.GAS_SECRET;
 const STORE = "gn-"; // คำนำหน้า key ใน localStorage
 
+// ชื่อเว็บของ Google ในข้อความให้กดได้ (เปิดแท็บใหม่) ใช้กับข้อความที่ผ่าน esc() แล้วเท่านั้น
+const LINK_DOMAINS = /(gemini\.google\.com|notebooklm\.google)(?![\w.])/g;
+const linkifyEscaped = (html) => html.replace(LINK_DOMAINS, (m) => `<a href="https://${m}" target="_blank" rel="noopener noreferrer">${m}</a>`);
 const esc = (text) => String(text).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[char]));
 const table = (rows) => `<div class="table-scroll"><table class="data-table"><thead><tr>${rows[0].map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${rows.slice(1).map(row => `<tr>${row.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 const stored = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
@@ -778,7 +781,7 @@ function renderLab(id) {
   <section class="content-grid"><div>
   <p><strong>ไฟล์ที่ใช้:</strong> ${esc(e.files)} ${files}</p>
   <h3>ขั้นตอน</h3>
-  <ol class="steps">${e.tasks.map(t => `<li>${esc(t)}</li>`).join("")}</ol>
+  <ol class="steps">${e.tasks.map(t => `<li>${linkifyEscaped(esc(t))}</li>`).join("")}</ol>
   ${e.prompts && e.prompts.length ? `<h3>Prompt ที่ใช้ (กดคัดลอก)</h3>${e.prompts.map(pid => labPrompts[pid] ? promptBlock(labPrompts[pid].label, labPrompts[pid].text) : "").join("")}` : ""}
   ${e.hint ? `<div class="side-note" style="position:static;margin:20px 0"><strong>คำใบ้</strong>${esc(e.hint)}</div>` : ""}
   <h3>ตรวจการบ้านของคุณ</h3>
