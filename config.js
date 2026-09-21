@@ -16,7 +16,7 @@ const APP_CONFIG = {
   CERT_ISSUER: "Channarong PIPATWATANAKUL",
   // ลายเซ็นบนเกียรติบัตร: ใส่ชื่อกรรมการผู้จัดการใน CERT_MD_NAME (เว้นว่าง = เหลือช่องว่างไว้เขียนสด)
   // รูปลายเซ็น (PNG พื้นโปร่งใส) วางในโฟลเดอร์ assets/ แล้วใส่พาธ เช่น "assets/sign-instructor.png" เว้นว่าง = เหลือช่องว่างไว้เซ็นสดหลังพิมพ์
-  CERT_MD_NAME: "Sonthaya THONG",
+  CERT_MD_NAME: "Sonthaya THUNG",
   CERT_SIGN_INSTRUCTOR_IMG: "",
   CERT_SIGN_MD_IMG: "",
   CERT_COURSE: "Gemini Notebook 2026",
