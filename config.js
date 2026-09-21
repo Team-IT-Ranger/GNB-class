@@ -22,5 +22,8 @@ const APP_CONFIG = {
   CERT_COURSE: "Gemini Notebook 2026",
   // ห้องแชตของคลาส: ลิงก์ห้อง Google Chat (ผู้เรียนต้องอยู่ในองค์กรเดียวกัน) เว้นว่าง = ปุ่มแจ้งว่ายังไม่ได้ตั้งค่า
   CHAT_URL: "https://chat.google.com/room/AAQAZhQsKdo?cls=7",
+  // โพสต์ลิงก์/โน้ตที่ผู้เรียนส่งลงห้อง Google Chat ของคลาสด้วย (ต้องตั้ง CHAT_WEBHOOK_URL ในหลังบ้านก่อน ดู backend/README.md)
+  // false = ไม่แสดงตัวเลือกนี้ในแอป
+  CHAT_POST: false,
   COMPANY_LABEL: "กรณีศึกษา: บริษัท ไร้ควันพันล้าน จำกัด (บริษัทสมมติ)",
 };

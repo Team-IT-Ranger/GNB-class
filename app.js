@@ -366,8 +366,9 @@ async function noteSaveToSheet() {
     noteEntries.push({ id: noteActiveId, title, content, savedAt: now });
   }
   persistNotes();
-  const ok = await syncToBackend("notes", { title, content });
-  sentToast(ok, "โน้ต");
+  const wantChat = chatPostEnabled() && Boolean(document.querySelector("#note-post-chat") && document.querySelector("#note-post-chat").checked);
+  const ok = await syncToBackend("notes", { title, content, chat: wantChat });
+  chatResultToast(ok, "โน้ต", wantChat);
   render();
 }
 function noteSaveAsTxt() {
@@ -400,6 +401,7 @@ function renderNotes() {
       <button type="button" id="note-delete" class="ghost-button" ${noteActiveId ? "" : "disabled"}>🗑 ลบบันทึกนี้</button>
     </div>
     <p class="consent-note">🔒 โน้ตเก็บในเบราว์เซอร์ของคุณอัตโนมัติ และจะส่งให้ผู้สอนเฉพาะเมื่อคุณกดปุ่ม "ส่งโน้ตนี้ให้ผู้สอน" เท่านั้น ห้ามใส่ชื่อบุคคลหรือข้อมูลลูกค้า</p>
+    ${chatOptionHtml("note-post-chat", false, "โน้ตนี้")}
     <div class="notes-layout">
       <div class="notes-editor">
         <input type="text" id="note-title" placeholder="หัวข้อ (ไม่บังคับ)" value="${esc(noteDraft.title)}" />
@@ -438,6 +440,7 @@ function isValidFullName(name) {
 
 // ทุกอย่างบันทึกในเบราว์เซอร์ก่อนเสมอ; ฟังก์ชันนี้ถูกเรียกเฉพาะตอนผู้เรียนกดปุ่มส่งเท่านั้น (ข้อ 10 ของ Methodology)
 // คืนค่า Promise<boolean>: true = หลังบ้านรับแล้ว, false = ยังไม่เชื่อมหลังบ้านหรือส่งไม่สำเร็จ
+let lastSyncReply = null;
 async function syncToBackend(type, payload) {
   if (!GAS_ENDPOINT) return false;
   try {
@@ -447,6 +450,7 @@ async function syncToBackend(type, payload) {
       body: JSON.stringify({ type, secret: GAS_SECRET, name: studentName(), ...payload }),
     });
     const data = await res.json();
+    lastSyncReply = data || null;
     return Boolean(data && data.ok);
   } catch {
     return false;
@@ -454,6 +458,18 @@ async function syncToBackend(type, payload) {
 }
 
 const backendReady = () => Boolean(GAS_ENDPOINT);
+// ตัวเลือก 'โพสต์ลงห้อง Google Chat ด้วย' แสดงเมื่อผู้สอนเปิดใน config.js เท่านั้น (ต้องตั้ง webhook ในหลังบ้านแล้ว)
+const chatPostEnabled = () => Boolean(APP_CONFIG.CHAT_POST) && backendReady();
+const chatOptionHtml = (id, checked, what) => chatPostEnabled()
+  ? `<label class="chat-post-option"><input type="checkbox" id="${id}" name="${id}" ${checked ? "checked" : ""} /> โพสต์${what}ลงห้อง Google Chat ของคลาสด้วย (ทุกคนในห้องจะเห็น)</label>`
+  : "";
+function chatResultToast(ok, what, wantChat) {
+  if (!wantChat || !ok) { sentToast(ok, what); return; }
+  const st = lastSyncReply && lastSyncReply.chat;
+  if (st === "posted") toast(`ส่ง${what}ให้ผู้สอนและโพสต์ในห้อง Google Chat แล้ว`);
+  else if (st === "throttled") toast(`ส่ง${what}ให้ผู้สอนแล้ว แต่โพสต์ลงแชตถี่เกินไป รอสักครู่แล้วลองใหม่ หรือพิมพ์ในห้องเอง`);
+  else toast(`ส่ง${what}ให้ผู้สอนแล้ว แต่โพสต์ลงห้อง Google Chat ไม่สำเร็จ (พิมพ์ในห้องเองได้)`);
+}
 function sentToast(ok, what) {
   if (ok) toast(`ส่ง${what}ให้ผู้สอนแล้ว`);
   else if (!backendReady()) toast(`บันทึก${what}ในเครื่องของคุณแล้ว (ยังไม่เชื่อมระบบส่งผลให้ผู้สอน)`);
@@ -476,7 +492,7 @@ function renderSubmitLinks() {
     <div class="field"><label for="link-type">ประเภทผลงาน</label><select id="link-type" name="linkType"><option value="Notebook">Notebook (Gemini Notebook)</option><option value="Gem">Gem</option><option value="Template">การ์ด Prompt Template (ลิงก์ Docs)</option><option value="Other">อื่น ๆ</option></select></div>
     <div class="field full"><label for="link-url">ลิงก์ (ต้องขึ้นต้นด้วย https://)</label><input id="link-url" name="linkUrl" type="url" inputmode="url" placeholder="https://..." maxlength="${MAX_LINK_LENGTH}" required /></div>
     <div class="field full"><label for="link-note">หมายเหตุ (ไม่จำเป็น) — ห้ามใส่ชื่อบุคคลหรือข้อมูลลูกค้า</label><input id="link-note" name="linkNote" maxlength="200" placeholder="เช่น Notebook เปิดตัวเจลตะไคร้ แผนกขาย MT" /></div>
-    <div class="full">${consentNoteHtml()}<button class="primary-button" type="submit">ส่งลิงก์ให้ผู้สอน</button></div>
+    <div class="full">${chatOptionHtml("postChat", true, "ลิงก์นี้")}${consentNoteHtml()}<button class="primary-button" type="submit">ส่งลิงก์ให้ผู้สอน</button></div>
   </form>
   <h2 style="margin-top:36px">ที่คุณส่งไปแล้ว (${list.length})</h2>
   ${list.length ? `<ul class="upload-history-modal-list">${list.map(l => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${esc(l.type)}: ${esc(l.url)}</a><small>${esc(new Date(l.savedAt).toLocaleString("th-TH"))} · ${l.sent ? "ส่งถึงผู้สอนแล้ว" : "บันทึกในเครื่องเท่านั้น"}${l.note ? " · " + esc(l.note) : ""}</small></li>`).join("")}</ul>` : `<p class="muted">ยังไม่ได้ส่งลิงก์ใด ๆ</p>`}
@@ -1270,9 +1286,10 @@ document.querySelector("#app").addEventListener("submit", async event => {
     if (!isValidFullName(name)) { toast("กรุณากรอกชื่อ 2 คำขึ้นไป (ชื่อ นามสกุล หรือ ชื่อเล่น แผนก)"); return; }
     if (!isSafeHttpsUrl(url)) { toast("ลิงก์ต้องขึ้นต้นด้วย https:// และยาวไม่เกิน " + MAX_LINK_LENGTH + " ตัวอักษร"); return; }
     const record = { type: String(data.get("linkType")), url, note: String(data.get("linkNote") || "").trim(), savedAt: Date.now(), sent: false };
-    record.sent = await syncToBackend("link", { linkType: record.type, url: record.url, note: record.note });
+    const wantChat = chatPostEnabled() && data.get("postChat") === "on";
+    record.sent = await syncToBackend("link", { linkType: record.type, url: record.url, note: record.note, chat: wantChat });
     const list = linkHistory(); list.unshift(record); save("gn-links", list.slice(0, 20));
-    sentToast(record.sent, "ลิงก์");
+    chatResultToast(record.sent, "ลิงก์", wantChat);
     render();
     return;
   }
