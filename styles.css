@@ -470,6 +470,8 @@ select { font: inherit; padding: 9px 10px; border: 1px solid var(--line); border
 .slide-body th { background: color-mix(in srgb, var(--green) 10%, var(--surface)); }
 .slide-body h3 { margin: 16px 0 6px; color: var(--green-dark); }
 .chat-post-option { display: flex; gap: 8px; align-items: center; margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: 14px; }
+.locked-name input[readonly] { background: color-mix(in srgb, var(--muted) 10%, var(--surface)); color: var(--ink); cursor: not-allowed; font-weight: 600; }
+.locked-name small { color: var(--muted); }
 .taker-name-box { margin: 0 0 20px; display: grid; gap: 4px; }
 .taker-name-box label { font-weight: 700; font-size: 14px; }
 .taker-name-box .taker-name { padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-weight: 600; }

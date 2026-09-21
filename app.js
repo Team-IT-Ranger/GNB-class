@@ -911,7 +911,7 @@ function renderConfidenceTab(mode) {
     return `<div class="quiz-result">${takerNameBoxHtml()}${confidenceReviewHtml(existing, mode)}<button type="button" class="ghost-button" data-action="retake-confidence" data-mode="${mode}">ทำแบบประเมินนี้ใหม่</button></div>`;
   }
   return `<form id="confidence-form" data-mode="${mode}">
-    ${nameFieldHtml()}
+    ${nameFieldLockedHtml()}
     <p class="lede" style="font-size:14px">ให้คะแนนความมั่นใจของคุณในแต่ละข้อ 1 = ทำไม่ได้เลย และ 5 = ทำได้เองอย่างมั่นใจ</p>
     <ol class="steps">${confidenceItems.map((c, i) => `<li>ฉันสามารถ...${esc(c)}
       <div class="scale-row">${[1, 2, 3, 4, 5].map(v => `<label class="scale-choice"><input type="radio" name="c${i}" value="${v}" required>${v}</label>`).join("")}</div>
@@ -934,7 +934,7 @@ function renderFollowupTab() {
     <button type="button" class="ghost-button" data-action="retake-followup">กรอกแบบติดตามใหม่</button></div>`;
   }
   return `<form id="followup-form">
-    ${nameFieldHtml()}
+    ${nameFieldLockedHtml()}
     <ol class="steps">${followupQuestions.map((q, i) => {
       if (q.type === "text") return `<li>${esc(q.q)}<input name="f${i}" class="text-answer" maxlength="300" /></li>`;
       const inputType = q.type === "multi" ? "checkbox" : "radio";
@@ -1173,6 +1173,11 @@ function hideModal() {
 }
 
 const nameFieldHtml = () => `<div class="field full required" style="margin-bottom:20px"><label>ชื่อผู้ทำ</label><input name="_takerName" required placeholder="ชื่อ นามสกุล หรือ ชื่อเล่น แผนก" value="${esc(studentName())}" /></div>`;
+// กล่องชื่อผู้ทำที่แสดงชื่อแต่แก้ไม่ได้ (readonly ยังถูกส่งไปกับฟอร์ม) ใช้กับแบบประเมินความมั่นใจและแบบติดตาม 7 วัน
+// ถ้ายังไม่มีชื่อที่ใช้ได้ (ยังไม่ผ่านหน้าใส่ชื่อ) จะเป็นช่องกรอกตามปกติ ไม่ให้ผู้เรียนส่งไม่ได้
+const nameFieldLockedHtml = () => isValidFullName(studentName())
+  ? `<div class="field full locked-name" style="margin-bottom:20px"><label for="locked-taker-name">ชื่อผู้ทำ</label><input id="locked-taker-name" name="_takerName" value="${esc(studentName())}" readonly aria-readonly="true" /><small>แก้ชื่อได้ที่ช่องชื่อในเมนูด้านซ้าย</small></div>`
+  : nameFieldHtml();
 // กล่องชื่อผู้ทำแบบอ่านอย่างเดียว ใช้ในหน้าที่ตอบไปแล้ว (ตอนกำลังทำมีช่องกรอกอยู่ที่หัวฟอร์ม)
 const takerNameBoxHtml = () => `<div class="taker-name-box"><label>ชื่อผู้ทำ</label><div class="taker-name">${esc(studentName() || "-")}</div><small>แก้ชื่อได้ที่ช่องชื่อในเมนูด้านซ้าย</small></div>`;
 function captureTakerName(data) {
