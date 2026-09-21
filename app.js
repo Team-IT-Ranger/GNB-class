@@ -1216,6 +1216,10 @@ function render() {
     view === "traps" ? renderTraps() :
     view === "verify" ? renderVerify() :
     search.value ? renderSearch(search.value) : renderHome();
+  // ปุ่มกลับไปสไลด์บรรยาย (สไลด์ที่เปิดค้างไว้ล่าสุด) ล่างกลางของหน้า Lab, Workshop และแบบทดสอบ
+  if (["lab", "workshop", "assessment"].includes(view)) {
+    app.insertAdjacentHTML("beforeend", `<div class="back-to-slides"><button type="button" class="ghost-button" data-view="slides-resume">← กลับไปสไลด์บรรยาย</button></div>`);
+  }
   if (view === "whiteboard") initWhiteboardCanvas();
   if (view === "notes") initNotesPage();
   if (view === "scores" && isInstructorDevice() && getInstructorKey()) loadScores();
