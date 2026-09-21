@@ -11,6 +11,7 @@ const verificationLog = [
   { item: "Data Table และ Infographic ใน Studio", status: "จากแหล่งข่าวรอง ต้องตรวจซ้ำ", source: "บทความสรุปฟีเจอร์ (ไม่ใช่หน้า Google โดยตรง)", url: "", planB: "ข้ามได้ ไม่อยู่ในแกนหลัก" },
   { item: "รันโค้ดวิเคราะห์ข้อมูลในสมุดโน้ต: เปิดให้ AI Ultra และลูกค้า Workspace ธุรกิจที่เข้าเกณฑ์ กำลังทยอยขยาย", status: "จากแหล่งข่าวรอง ต้องตรวจซ้ำ", source: "รายงานข่าวเกี่ยวกับการประกาศเมื่อ 16 ก.ค. 2569 (ไม่ใช่หน้า Google โดยตรง)", url: "", planB: "ไม่ต้องพึ่งฟีเจอร์นี้ คำนวณใน Sheets เป็นหลักแล้วเทียบ" },
   { item: "ชื่อปุ่ม เมนู และหน้าจอของ Gemini/Gemini Notebook ตรงกับที่เขียนในสื่อ", status: "ยังไม่ได้ทดสอบกับหน้าจอจริง", source: "-", url: "", planB: "ผู้สอนไล่ทำ Lab 0-4 ด้วยบัญชีองค์กรก่อนสอนหนึ่งรอบ และแก้ชื่อปุ่มในสื่อ" },
+  { item: "Notebook ไม่รับไฟล์ Excel (.xlsx/.xls) ตรง ๆ (รับ Google Sheets ไม่เกินประมาณ 100k tokens, CSV, .docx, .pptx, PDF, .txt, .md)", status: "ตรวจกับหน้า Help ของ Google เมื่อ 21 ก.ย. 2569 (บทความบุคคลที่สามบางแห่งขัดแย้ง ควรลองอัปโหลดจริงบนบัญชีองค์กร)", source: "Gemini Notebook Help", url: "https://support.google.com/gemininotebook/answer/16215270", planB: "เปิด .xlsx เป็น Google Sheets ก่อน หรือส่งออก CSV" },
   { item: "ภาษาไทยและไฟล์ .docx/.xlsx ของชุดเอกสารสมมติ อ่านได้ถูกต้องใน Notebook", status: "ยังไม่ได้ทดสอบ", source: "-", url: "", planB: "แปลงเป็น Google Docs/Sheets ก่อน ถ้ายังผิด ให้ใช้ Docs" },
   { item: "เนื้อหาและ Lab ทดสอบกับพนักงานกลุ่มเล็กแล้ว", status: "ยังไม่ได้ทำ", source: "-", url: "", planB: "ทดสอบกับ 3-5 คนก่อนสอนจริง แล้วบันทึกผลกลับมา" },
 ];
