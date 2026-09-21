@@ -712,6 +712,7 @@ function renderAgendaPage() {
     return `<tr class="${r.brk ? "agenda-break-row" : "agenda-hour-row"}"><td class="agenda-duration-cell"><strong>${esc(r.clock)}</strong><br><small>${r.minutes} นาที · นาทีที่ ${esc(r.start)}–${esc(r.end)}</small></td><td><strong>${esc(r.block)}</strong>${r.lo ? `<br><small class="muted">${esc(r.lo)}</small>` : ""}</td><td>${esc(r.activity)}</td><td>${slideCell} ${labCell} ${gotoCell}</td></tr>`;
   }).join("");
   return `<section><div class="eyebrow">หน้าสรุปภาพรวม</div><h1>Class Agenda</h1><p class="lede"><strong>${esc(classSchedule.date)} เวลา ${esc(classSchedule.time)}</strong> (${esc(classSchedule.note)})<br>ไทม์ไลน์คลาส 3 ชั่วโมงแบบนาทีต่อนาที (รวม ${total} นาทีพอดี รวมพัก 10 นาที) ส่วนที่เป็น 'เสริม' ไม่นับในเวลาคลาส ทำต่อที่บ้านหรือเมื่อเวลาเหลือ</p>${venueBadgeHtml()}
+  <p class="lede"><strong>สัดส่วนเวลาสอน: Gemini ${Math.round(timeShare.gemini / timeShare.base * 100)}% (${timeShare.gemini} นาที) · Gemini Notebook ${Math.round(timeShare.notebook / timeShare.base * 100)}% (${timeShare.notebook} นาที)</strong> คิดจาก ${timeShare.base} นาทีที่สอนและลงมือทำ ไม่รวมเปิดคลาส แบบทดสอบก่อนเรียน พัก และประเมินผล ส่วนใหญ่เป็นการลงมือทำบน Notebook โดยเฉพาะ Workshop 65 นาที</p>
   <h2 style="margin-top:28px">จุดประสงค์การเรียนรู้</h2><ol class="steps lo-list">${learningObjectives.map(l => `<li><strong>${esc(l.id)}</strong> ${esc(l.text)}</li>`).join("")}</ol>
   <h2 style="margin-top:32px">ไทม์ไลน์ 180 นาที (13:30–16:30)</h2>
   <div class="agenda-table-wrap"><table class="agenda-table"><thead><tr><th>เวลา</th><th>ช่วง</th><th>กิจกรรม</th><th>ไปที่</th></tr></thead><tbody>${rows}</tbody></table></div>
@@ -838,7 +839,7 @@ function renderWorkshop(id) {
   <section class="content-grid"><div>
   <h3>สถานการณ์สมมติ</h3><p>${esc(w.scenario)}</p>
   <div class="trap"><strong>ภารกิจ</strong><br>${esc(w.mission)}</div>
-  <h3>ลงมือทำ 28 นาที: 5 ขั้น</h3><ol class="steps">${w.steps.map(([h, b]) => `<li><strong>${esc(h)}</strong><br>${esc(b)}</li>`).join("")}</ol>
+  <h3>ลงมือทำ 45 นาที: 5 ขั้น</h3><ol class="steps">${w.steps.map(([h, b]) => `<li><strong>${esc(h)}</strong><br>${esc(b)}</li>`).join("")}</ol>
   <h3>เลือกสายงานและแผนกของคุณ</h3>
   ${groupTabs}
   <article class="card-block"><h2>โจทย์: ${esc(t.dept)}</h2><p><strong>งานและ Deliverable:</strong> ${esc(t.task)}</p><p><strong>แหล่งข้อมูล:</strong> ${esc(t.sources)} <small class="muted">(ไฟล์ที่มี * ต้องลบชื่อก่อน)</small></p><p><strong>ผลลัพธ์ที่ต้องได้:</strong></p><ul>${t.deliverables.map(d => `<li>${esc(d)}</li>`).join("")}</ul>

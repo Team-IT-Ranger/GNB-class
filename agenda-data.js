@@ -1,6 +1,6 @@
 // หน้าสรุปภาพรวมของคลาส: จุดประสงค์การเรียนรู้ + ไทม์ไลน์ 180 นาที + สิ่งที่ต้องเตรียม + ข้อจำกัดของเครื่องมือ
 // โครงหลักสูตรตามที่ Gemini ออกแบบ (Part 1 แนวคิดและเตรียมข้อมูล → Part 2 เจาะลึก Notebook → Part 3 Workshop → ประเมินและเกียรติบัตร)
-// (10 นาทีแรกของชั่วโมงแรกหลัง Lab 0 คือแบบทดสอบและความมั่นใจก่อนเรียน; Part 1 จึงเหลือ 45 นาที)
+// (โครงสร้าง 21 ก.ย. 2569: Gemini 26 นาที = 20% · Notebook 104 นาที = 80% ของเวลาสอน 130 นาที Workshop 65 นาที)
 // ไทม์ไลน์นี้คือ "แหล่งความจริงเดียว" ของเวลา (รวม 180 นาทีพอดี) ส่วนที่ติดป้าย "เสริม" ไม่นับในเวลาคลาส
 
 // วันเวลาของคลาสรอบแรก (start/end ในไทม์ไลน์คือนาทีนับจากเริ่มคลาส ส่วน clock คือเวลานาฬิกาจริง)
@@ -19,18 +19,22 @@ const learningObjectives = [
 const courseTimeline = [
   { start: "0:00", end: "0:10", clock: "13:30–13:40", block: "เปิดคลาส", minutes: 10, lo: "LO1", activity: "ผลลัพธ์ 3 ชิ้น · ไทม์ไลน์ · กติกาข้อมูล 4 ข้อ · Lab 0 ตรวจบัญชีและฟีเจอร์ (5)", lab: "0", slide: 1 },
   { start: "0:10", end: "0:20", clock: "13:40–13:50", block: "แบบทดสอบและความมั่นใจก่อนเรียน", minutes: 10, lo: "ทุกข้อ (ฐานเทียบก่อน–หลัง)", activity: "Pre-test 12 ข้อ (ประมาณ 6) + ความมั่นใจก่อนเรียน 10 ข้อ (ประมาณ 4) ทำในแอป ผลถึงผู้สอนเมื่อกดส่งเอง ไม่มีเกณฑ์ผ่านหรือตก", lab: "", goto: [["Pre-test", "#assessment/quiz/pre"], ["ความมั่นใจก่อนเรียน", "#assessment/confidence/pre"]], slide: 5 },
-  { start: "0:20", end: "1:05", clock: "13:50–14:35", block: "Part 1 · Concept & Data Preparation", minutes: 45, lo: "LO1-LO3, LO6", activity: "บรรยายย่อ 13 นาที (Notebook คืออะไร · Workflow · ตัวอย่างก่อน–หลัง · Protect · 4 ขั้น Clean→Outline · Master Prompt · เดโม) + Lab 1 ปิดชื่อ (8) + Lab 2 Master Prompt (15) + Lab 3 Gem (9)", lab: "1-3", slide: 6 },
-  { start: "1:05", end: "1:15", clock: "14:35–14:45", block: "พัก", minutes: 10, brk: true, activity: "ตรวจว่ามีไฟล์ _masked อย่างน้อย 3 ไฟล์" },
-  { start: "1:15", end: "1:55", clock: "14:45–15:25", block: "Part 2 · Notebook Deep Dive", minutes: 40, lo: "LO4, LO5", activity: "บรรยายย่อ 10 นาที (Grounded & แหล่งข้อมูล · คำถาม 4 ประเภท · Citation · ข้อขัดแย้ง · Studio Artifacts) + Lab 4 สร้าง Notebook (15) + Lab 5 ข้อขัดแย้งและ Studio (15)", lab: "4-5", slide: 21 },
-  { start: "1:55", end: "2:40", clock: "15:25–16:10", block: "Part 3 · Hands-on Workshop", minutes: 45, lo: "LO3-LO6", activity: "แนะนำโจทย์ 2 นาที + ลงมือทำตามสายงาน 28 นาที + นำเสนอกลุ่มและแลกเปลี่ยนเทคนิค Prompting 15 นาที", lab: "W", slide: 30 },
+  { start: "0:20", end: "0:46", clock: "13:50–14:16", block: "Gemini · เตรียมข้อมูล (20%)", minutes: 26, track: "gemini", lo: "LO1-LO3, LO6", activity: "บรรยายย่อ 5 นาที (Notebook คืออะไร · Workflow · Protect · 4 ขั้น · Master Prompt) + Lab 1 ปิดชื่อ (7) + Lab 2 Master Prompt (9) + Lab 3 Gem (5)", lab: "1-3", slide: 6 },
+  { start: "0:46", end: "1:05", clock: "14:16–14:35", block: "Notebook · ตอนที่ 1 (ถามตอบและอ้างอิง)", minutes: 19, track: "notebook", lo: "LO4, LO5", activity: "บรรยายย่อ 4 นาที (แหล่งข้อมูล · คำถาม 4 ประเภท · Citation 3 ชั้น) + Lab 4 สร้าง Notebook (15)", lab: "4", slide: 20 },
+  { start: "1:05", end: "1:15", clock: "14:35–14:45", block: "พัก", minutes: 10, brk: true, activity: "ตรวจว่า Notebook มี 6 แหล่งและถามครบ 4 คำถามแล้ว ใครยังไม่เสร็จทำต่อระหว่างพัก", slide: 25 },
+  { start: "1:15", end: "1:35", clock: "14:45–15:05", block: "Notebook · ตอนที่ 2 (ข้อขัดแย้งและ Studio)", minutes: 20, track: "notebook", lo: "LO4, LO5", activity: "บรรยายย่อ 5 นาที (ข้อขัดแย้ง · ข้อความที่แอบสั่ง AI · Studio Artifacts) + Lab 5 ข้อขัดแย้งและ Studio (15)", lab: "5", slide: 26 },
+  { start: "1:35", end: "2:40", clock: "15:05–16:10", block: "Workshop บน Notebook (เน้นปฏิบัติ)", minutes: 65, track: "notebook", lo: "LO3-LO6", activity: "แนะนำโจทย์ 3 นาที + ลงมือทำตามสายงานบน Notebook 45 นาที + นำเสนอกลุ่มและแลกเปลี่ยนเทคนิค Prompting 15 นาที + สรุป 2 นาที", lab: "W", slide: 30 },
   { start: "2:40", end: "3:00", clock: "16:10–16:30", block: "Evaluation & Q&A", minutes: 20, lo: "ทุกข้อ", activity: "Post-test 5 ข้อ (6) + แบบประเมินและเกียรติบัตร (6) + สรุป 3 สิ่งที่ต้องจำและแผน 7 วัน (4) + ถามตอบ (4)", lab: "", slide: 34 },
 ];
+
+// สัดส่วนเวลาสอน: คิดจาก 130 นาทีที่สอนและลงมือทำ (ไม่รวมเปิดคลาส แบบทดสอบก่อนเรียน พัก และประเมินผล)
+const timeShare = { base: 130, gemini: 26, notebook: 104 };
 
 // ส่วนเสริม: ไม่อยู่ในเวลา 180 นาที ทำต่อที่บ้านหรือถ้าเวลาเหลือ
 const optionalItems = [
   "Lab 2 ตอน B: ตรวจและทำความสะอาดรายงานยอดขายใน Sheets (จำเป็นมากกับแผนกขาย การตลาด และการเงินในงานจริง)",
   "Lab 5: Audio Overview, FAQ, Timeline, Slide Deck และ Video (ถ้าบัญชีมีฟีเจอร์นี้)",
-  "สไลด์ 7 (ตัวอย่างผลลัพธ์) และสไลด์เช็กความเข้าใจ 27 (ข้ามได้ถ้าเวลาไม่พอ)",
+  "สไลด์ Gemini ที่ข้ามได้ (7, 9, 15, 16, 18) และสไลด์ทบทวน/เช็กความเข้าใจ (20, 27) อ่านเองหรือข้ามได้ถ้าเวลาไม่พอ",
   "แบบติดตาม 7 วันในแอป (Pre-test และความมั่นใจก่อนเรียนอยู่ในเวลาคลาสแล้ว)",
 ];
 
