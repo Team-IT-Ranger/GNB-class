@@ -881,7 +881,7 @@ function renderQuizTab(mode) {
   const qset = quizSet(mode);
   let resultHtml;
   if (existing) {
-    resultHtml = `<div class="quiz-result">${quizReviewHtml(existing, mode)}<button type="button" class="ghost-button" data-action="retake-quiz" data-mode="${mode}">ทำแบบทดสอบชุดนี้ใหม่</button></div>`;
+    resultHtml = `<div class="quiz-result">${takerNameBoxHtml()}${quizReviewHtml(existing, mode)}<button type="button" class="ghost-button" data-action="retake-quiz" data-mode="${mode}">ทำแบบทดสอบชุดนี้ใหม่</button></div>`;
   } else {
     resultHtml = `<form id="quiz-form" data-mode="${mode}">
       ${nameFieldHtml()}
@@ -908,7 +908,7 @@ function renderConfidenceTab(mode) {
   const existing = stored(key, null);
   const modeLabel = mode === "pre" ? "ก่อนเรียน" : "หลังเรียน";
   if (existing) {
-    return `<div class="quiz-result">${confidenceReviewHtml(existing, mode)}<button type="button" class="ghost-button" data-action="retake-confidence" data-mode="${mode}">ทำแบบประเมินนี้ใหม่</button></div>`;
+    return `<div class="quiz-result">${takerNameBoxHtml()}${confidenceReviewHtml(existing, mode)}<button type="button" class="ghost-button" data-action="retake-confidence" data-mode="${mode}">ทำแบบประเมินนี้ใหม่</button></div>`;
   }
   return `<form id="confidence-form" data-mode="${mode}">
     ${nameFieldHtml()}
@@ -1173,6 +1173,8 @@ function hideModal() {
 }
 
 const nameFieldHtml = () => `<div class="field full required" style="margin-bottom:20px"><label>ชื่อผู้ทำ</label><input name="_takerName" required placeholder="ชื่อ นามสกุล หรือ ชื่อเล่น แผนก" value="${esc(studentName())}" /></div>`;
+// กล่องชื่อผู้ทำแบบอ่านอย่างเดียว ใช้ในหน้าที่ตอบไปแล้ว (ตอนกำลังทำมีช่องกรอกอยู่ที่หัวฟอร์ม)
+const takerNameBoxHtml = () => `<div class="taker-name-box"><label>ชื่อผู้ทำ</label><div class="taker-name">${esc(studentName() || "-")}</div><small>แก้ชื่อได้ที่ช่องชื่อในเมนูด้านซ้าย</small></div>`;
 function captureTakerName(data) {
   const name = (data.get("_takerName") || "").trim();
   if (name) {
