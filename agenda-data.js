@@ -1,5 +1,6 @@
 // หน้าสรุปภาพรวมของคลาส: จุดประสงค์การเรียนรู้ + ไทม์ไลน์ 180 นาที + สิ่งที่ต้องเตรียม + ข้อจำกัดของเครื่องมือ
 // โครงหลักสูตรตามที่ Gemini ออกแบบ (Part 1 แนวคิดและเตรียมข้อมูล → Part 2 เจาะลึก Notebook → Part 3 Workshop → ประเมินและเกียรติบัตร)
+// (10 นาทีแรกของชั่วโมงแรกหลัง Lab 0 คือแบบทดสอบและความมั่นใจก่อนเรียน; Part 1 จึงเหลือ 45 นาที)
 // ไทม์ไลน์นี้คือ "แหล่งความจริงเดียว" ของเวลา (รวม 180 นาทีพอดี) ส่วนที่ติดป้าย "เสริม" ไม่นับในเวลาคลาส
 
 // วันเวลาของคลาสรอบแรก (start/end ในไทม์ไลน์คือนาทีนับจากเริ่มคลาส ส่วน clock คือเวลานาฬิกาจริง)
@@ -17,7 +18,8 @@ const learningObjectives = [
 // slide = เลขสไลด์แรกของช่วง (ตรงกับ slides-data.js) · lab = Lab ที่ทำในช่วงนั้น
 const courseTimeline = [
   { start: "0:00", end: "0:10", clock: "13:30–13:40", block: "เปิดคลาส", minutes: 10, lo: "LO1", activity: "ผลลัพธ์ 3 ชิ้น · ไทม์ไลน์ · กติกาข้อมูล 4 ข้อ · Lab 0 ตรวจบัญชีและฟีเจอร์ (5)", lab: "0", slide: 1 },
-  { start: "0:10", end: "1:05", clock: "13:40–14:35", block: "Part 1 · Concept & Data Preparation", minutes: 55, lo: "LO1-LO3, LO6", activity: "บรรยายย่อ 20 นาที (Notebook คืออะไร · ข้อจำกัดและ Workflow · Protect · 4 ขั้น Clean→Outline · Master Prompt) + Lab 1 ปิดชื่อ (8) + Lab 2 Master Prompt (15) + Lab 3 Gem (9) + ตรวจกลับ/เดโม", lab: "1-3", slide: 5 },
+  { start: "0:10", end: "0:20", clock: "13:40–13:50", block: "แบบทดสอบและความมั่นใจก่อนเรียน", minutes: 10, lo: "ทุกข้อ (ฐานเทียบก่อน–หลัง)", activity: "Pre-test 12 ข้อ (ประมาณ 6) + ความมั่นใจก่อนเรียน 10 ข้อ (ประมาณ 4) ทำในแอป ผลถึงผู้สอนเมื่อกดส่งเอง ไม่มีเกณฑ์ผ่านหรือตก", lab: "", goto: [["Pre-test", "#assessment/quiz/pre"], ["ความมั่นใจก่อนเรียน", "#assessment/confidence/pre"]], slide: 5 },
+  { start: "0:20", end: "1:05", clock: "13:50–14:35", block: "Part 1 · Concept & Data Preparation", minutes: 45, lo: "LO1-LO3, LO6", activity: "บรรยายย่อ 13 นาที (Notebook คืออะไร · Workflow · ตัวอย่างก่อน–หลัง · Protect · 4 ขั้น Clean→Outline · Master Prompt · เดโม) + Lab 1 ปิดชื่อ (8) + Lab 2 Master Prompt (15) + Lab 3 Gem (9)", lab: "1-3", slide: 6 },
   { start: "1:05", end: "1:15", clock: "14:35–14:45", block: "พัก", minutes: 10, brk: true, activity: "ตรวจว่ามีไฟล์ _masked อย่างน้อย 3 ไฟล์" },
   { start: "1:15", end: "1:55", clock: "14:45–15:25", block: "Part 2 · Notebook Deep Dive", minutes: 40, lo: "LO4, LO5", activity: "บรรยายย่อ 10 นาที (Grounded & แหล่งข้อมูล · คำถาม 4 ประเภท · Citation · ข้อขัดแย้ง · Studio Artifacts) + Lab 4 สร้าง Notebook (15) + Lab 5 ข้อขัดแย้งและ Studio (15)", lab: "4-5", slide: 21 },
   { start: "1:55", end: "2:40", clock: "15:25–16:10", block: "Part 3 · Hands-on Workshop", minutes: 45, lo: "LO3-LO6", activity: "แนะนำโจทย์ 2 นาที + ลงมือทำตามสายงาน 28 นาที + นำเสนอกลุ่มและแลกเปลี่ยนเทคนิค Prompting 15 นาที", lab: "W", slide: 30 },
@@ -28,8 +30,8 @@ const courseTimeline = [
 const optionalItems = [
   "Lab 2 ตอน B: ตรวจและทำความสะอาดรายงานยอดขายใน Sheets (จำเป็นมากกับแผนกขาย การตลาด และการเงินในงานจริง)",
   "Lab 5: Audio Overview, FAQ, Timeline, Slide Deck และ Video (ถ้าบัญชีมีฟีเจอร์นี้)",
-  "สไลด์เช็กความเข้าใจ 7 และ 27 (ข้ามได้ถ้าเวลาไม่พอ)",
-  "Pre-test 12 ข้อและแบบติดตาม 7 วันในแอป",
+  "สไลด์ 7 (ตัวอย่างผลลัพธ์) และสไลด์เช็กความเข้าใจ 27 (ข้ามได้ถ้าเวลาไม่พอ)",
+  "แบบติดตาม 7 วันในแอป (Pre-test และความมั่นใจก่อนเรียนอยู่ในเวลาคลาสแล้ว)",
 ];
 
 const preClassChecklist = {

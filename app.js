@@ -6,9 +6,21 @@ const GAS_ENDPOINT = APP_CONFIG.GAS_ENDPOINT;
 const GAS_SECRET = APP_CONFIG.GAS_SECRET;
 const STORE = "gn-"; // คำนำหน้า key ใน localStorage
 
-// ชื่อเว็บของ Google ในข้อความให้กดได้ (เปิดแท็บใหม่) ใช้กับข้อความที่ผ่าน esc() แล้วเท่านั้น
-const LINK_DOMAINS = /(gemini\.google\.com|notebooklm\.google)(?![\w.])/g;
-const linkifyEscaped = (html) => html.replace(LINK_DOMAINS, (m) => `<a href="https://${m}" target="_blank" rel="noopener noreferrer">${m}</a>`);
+// ข้อความในหน้า Lab ที่ให้กดได้: เว็บของ Google (เปิดแท็บใหม่) และการอ้างถึง Lab อื่น / คลังคำสั่ง (ไปหน้านั้นในแอป)
+const RICH_LINKS = /(gemini\.google\.com|notebooklm\.google)(?![\w.])|Lab (\d)-(\d)(?!\d)|Lab (\d)(?![\d-])|คลังคำสั่ง|Google Drive|Google Docs|แอป Gemini/g;
+const extLink = (url, label) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+function richLink(text) {
+  return esc(text).replace(RICH_LINKS, (m, dom, a1, a2, one) => {
+    if (dom) return extLink(`https://${dom}`, dom);
+    if (a1) return `<a href="#lab/${a1}">Lab ${a1}</a>-<a href="#lab/${a2}">${a2}</a>`;
+    if (one) return `<a href="#lab/${one}">Lab ${one}</a>`;
+    if (m === "คลังคำสั่ง") return `<a href="#prompts">คลังคำสั่ง</a>`;
+    if (m === "Google Drive") return extLink("https://drive.google.com", m);
+    if (m === "Google Docs") return extLink("https://docs.google.com/document/", m);
+    if (m === "แอป Gemini") return extLink("https://gemini.google.com", m);
+    return m;
+  });
+}
 const esc = (text) => String(text).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[char]));
 const table = (rows) => `<div class="table-scroll"><table class="data-table"><thead><tr>${rows[0].map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${rows.slice(1).map(row => `<tr>${row.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 const stored = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
@@ -696,7 +708,8 @@ function renderAgendaPage() {
   const rows = courseTimeline.map(r => {
     const slideCell = r.slide ? `<button type="button" class="link-button" data-view="slides" data-id="${r.slide}">สไลด์ ${r.slide}+</button>` : "";
     const labCell = r.lab === "W" ? `<button type="button" class="link-button" data-view="workshop">Workshop</button>` : (r.lab ? `<button type="button" class="link-button" data-view="lab" data-id="${r.lab.split("-")[0]}">Lab ${esc(r.lab)}</button>` : "");
-    return `<tr class="${r.brk ? "agenda-break-row" : "agenda-hour-row"}"><td class="agenda-duration-cell"><strong>${esc(r.clock)}</strong><br><small>${r.minutes} นาที · นาทีที่ ${esc(r.start)}–${esc(r.end)}</small></td><td><strong>${esc(r.block)}</strong>${r.lo ? `<br><small class="muted">${esc(r.lo)}</small>` : ""}</td><td>${esc(r.activity)}</td><td>${slideCell} ${labCell}</td></tr>`;
+    const gotoCell = (r.goto || []).map(([label, route]) => `<a href="${esc(route)}">${esc(label)}</a>`).join(" · ");
+    return `<tr class="${r.brk ? "agenda-break-row" : "agenda-hour-row"}"><td class="agenda-duration-cell"><strong>${esc(r.clock)}</strong><br><small>${r.minutes} นาที · นาทีที่ ${esc(r.start)}–${esc(r.end)}</small></td><td><strong>${esc(r.block)}</strong>${r.lo ? `<br><small class="muted">${esc(r.lo)}</small>` : ""}</td><td>${esc(r.activity)}</td><td>${slideCell} ${labCell} ${gotoCell}</td></tr>`;
   }).join("");
   return `<section><div class="eyebrow">หน้าสรุปภาพรวม</div><h1>Class Agenda</h1><p class="lede"><strong>${esc(classSchedule.date)} เวลา ${esc(classSchedule.time)}</strong> (${esc(classSchedule.note)})<br>ไทม์ไลน์คลาส 3 ชั่วโมงแบบนาทีต่อนาที (รวม ${total} นาทีพอดี รวมพัก 10 นาที) ส่วนที่เป็น 'เสริม' ไม่นับในเวลาคลาส ทำต่อที่บ้านหรือเมื่อเวลาเหลือ</p>${venueBadgeHtml()}
   <h2 style="margin-top:28px">จุดประสงค์การเรียนรู้</h2><ol class="steps lo-list">${learningObjectives.map(l => `<li><strong>${esc(l.id)}</strong> ${esc(l.text)}</li>`).join("")}</ol>
@@ -795,19 +808,19 @@ function renderLab(id) {
   const files = e.folder ? zipLink(e.folder, "ดาวน์โหลดไฟล์ประกอบ Lab นี้") : "";
   return `<section class="chapter-header"><div><div class="eyebrow">Lab ${e.id} · ${esc(e.time)}</div><h1>${esc(e.title)}</h1><p class="lede">${esc(e.hour)}</p></div><div class="chapter-no">LAB ${e.id}</div></section>
   <section class="content-grid"><div>
-  <p><strong>ไฟล์ที่ใช้:</strong> ${esc(e.files)} ${files}</p>
+  <p><strong>ไฟล์ที่ใช้:</strong> ${richLink(e.files)} ${files}</p>
   <h3>ขั้นตอน</h3>
-  <ol class="steps">${e.tasks.map(t => `<li>${linkifyEscaped(esc(t))}</li>`).join("")}</ol>
+  <ol class="steps">${e.tasks.map(t => `<li>${richLink(t)}</li>`).join("")}</ol>
   ${e.prompts && e.prompts.length ? `<h3>Prompt ที่ใช้ (กดคัดลอก)</h3>${e.prompts.map(pid => labPrompts[pid] ? promptBlock(labPrompts[pid].label, labPrompts[pid].text) : "").join("")}` : ""}
-  ${e.hint ? `<div class="side-note" style="position:static;margin:20px 0"><strong>คำใบ้</strong>${esc(e.hint)}</div>` : ""}
+  ${e.hint ? `<div class="side-note" style="position:static;margin:20px 0"><strong>คำใบ้</strong>${richLink(e.hint)}</div>` : ""}
   <h3>ตรวจการบ้านของคุณ</h3>
   <p class="lede" style="font-size:14px">กรอกค่าที่คุณเห็นจากต้นฉบับหรือที่ตรวจแล้วจริง ๆ ระบบเทียบกับค่าอ้างอิงของชุดเอกสารสมมติ ถ้า AI ตอบไม่ตรง แปลว่าต้องกลับไปตรวจอ้างอิง</p>
   ${table(e.checks)}
   ${selfCheckBlock("exercise", e.id, e.checks)}
   ${e.checksOptional ? `<h4 style="margin-top:28px">ส่วนเสริม</h4>${table(e.checksOptional)}${selfCheckBlock("exercise", `${e.id}b`, e.checksOptional)}` : ""}
-  <div class="trap trap-plan"><strong>แผนสำรอง (Plan B)</strong><br>${esc(e.planB)}</div>
-  ${e.challenge && e.challenge.length ? `<h3>ข้อท้าทายเพิ่มเติม</h3><ul>${e.challenge.map(c => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
-  ${e.pitfalls && e.pitfalls.length ? `<div class="trap"><strong>จุดที่ผู้เรียนพลาดบ่อย</strong><ul style="margin:8px 0 0;padding-left:18px">${e.pitfalls.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>` : ""}
+  <div class="trap trap-plan"><strong>แผนสำรอง (Plan B)</strong><br>${richLink(e.planB)}</div>
+  ${e.challenge && e.challenge.length ? `<h3>ข้อท้าทายเพิ่มเติม</h3><ul>${e.challenge.map(c => `<li>${richLink(c)}</li>`).join("")}</ul>` : ""}
+  ${e.pitfalls && e.pitfalls.length ? `<div class="trap"><strong>จุดที่ผู้เรียนพลาดบ่อย</strong><ul style="margin:8px 0 0;padding-left:18px">${e.pitfalls.map(p => `<li>${richLink(p)}</li>`).join("")}</ul></div>` : ""}
   <div class="exercise-pager">
     ${prev ? `<button class="ghost-button" data-view="lab" data-id="${prev.id}">← Lab ${prev.id}</button>` : "<span></span>"}
     ${next ? `<button class="primary-button" data-view="lab" data-id="${next.id}">Lab ${next.id} →</button>` : `<button class="primary-button" data-view="workshop">ไป Part 3: Workshop →</button>`}
